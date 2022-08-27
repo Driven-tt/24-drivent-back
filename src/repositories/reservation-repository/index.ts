@@ -15,11 +15,20 @@ async function upsert(
   });
 }
 
+async function findByUserId(userId: number) {
+  return prisma.reservation.findUnique({
+    where: {
+      userId,
+    },
+  });
+}
+
 export type CreateReservationParams = Omit<Reservation, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateReservationParams = Omit<CreateReservationParams, 'userId'>;
 
 const reservationRepository = {
   upsert,
+  findByUserId,
 };
 
 export default reservationRepository;
