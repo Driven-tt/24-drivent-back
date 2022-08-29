@@ -5,6 +5,9 @@ import faker from '@faker-js/faker';
 import bcrypt from 'bcrypt';
 import { createEvent, createUser as createUserSeed } from '../factories';
 import { cleanDb } from '../helpers';
+import eventsService from '@/services/events-service';
+import { cannotEnrollBeforeStartDateError } from '@/errors';
+import userRepository from '@/repositories/user-repository';
 
 beforeAll(async () => {
   await init();
@@ -12,6 +15,19 @@ beforeAll(async () => {
 });
 
 describe('createUser', () => {
+  it('should throw CannotEnrollBeforeStartDateError if event is not active', async () => {
+    jest.spyOn(eventsService, 'isCurrentEventActive').mockResolvedValueOnce(false);
+    jest.spyOn(userRepository, 'create').mockRejectedValueOnce(null);
+
+    const promise = userService.createUser({
+      email: faker.internet.email(),
+      password: faker.internet.password(6),
+    });
+
+    expect(promise).rejects.toEqual(cannotEnrollBeforeStartDateError());
+    expect(userRepository.create).not.toBeCalled();
+  });
+
   it('should throw duplicatedUserError if there is a user with given email', async () => {
     await createEvent();
     const existingUser = await createUserSeed();
@@ -47,6 +63,7 @@ describe('createUser', () => {
   });
 
   it('should hash user password', async () => {
+    jest.spyOn(eventsService, 'isCurrentEventActive').mockResolvedValueOnce(true);
     const rawPassword = faker.internet.password(6);
     const user = await userService.createUser({
       email: faker.internet.email(),
