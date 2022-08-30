@@ -9,8 +9,17 @@ async function insert(params: CreatePaymentParams) {
   });
 }
 
+async function findByUserId(userId: number) {
+  return prisma.payment.findUnique({
+    where: {
+      userId,
+    },
+  });
+}
+
 const paymentRepository = {
   insert,
+  findByUserId,
 };
 
 export default paymentRepository;

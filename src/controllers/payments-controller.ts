@@ -7,3 +7,9 @@ export async function registerPayment(req: Request, res: Response) {
   await paymentService.createPayment(paymentData);
   res.sendStatus(201);
 }
+
+export async function getPayment(req: Request, res: Response) {
+  const userId = Number(req.params.userId);
+  const payment = await paymentService.getPayment(userId);
+  res.status(200).send({ payment });
+}
