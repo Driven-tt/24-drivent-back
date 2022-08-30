@@ -13,3 +13,10 @@ export function ReservationNotFoundError(): ApplicationError {
     message: 'Reservation not found',
   };
 }
+
+export function EnrollmentNotFoundError(): ApplicationError {
+  return {
+    name: 'NotFoundError',
+    message: 'Cannot reserve ticket without subscription',
+  };
+}

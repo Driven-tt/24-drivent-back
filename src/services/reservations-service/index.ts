@@ -1,13 +1,20 @@
 import userRepository from '@/repositories/user-repository';
-import { ReservationNotFoundError, UserNotFoundError } from './errors';
+import { EnrollmentNotFoundError, ReservationNotFoundError, UserNotFoundError } from './errors';
 import reservationRepository, { CreateReservationParams } from '@/repositories/reservation-repository';
 import { exclude } from '@/utils/prisma-utils';
+import enrollmentRepository from '@/repositories/enrollment-repository';
 
 async function createOrUpdateReservation(reservationData: CreateReservationParams) {
   const user = await userRepository.findById(reservationData.userId);
 
   if (!user) {
     throw UserNotFoundError();
+  }
+
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(reservationData.userId);
+
+  if (!enrollment) {
+    throw EnrollmentNotFoundError();
   }
 
   const createReservation = { ...reservationData };
