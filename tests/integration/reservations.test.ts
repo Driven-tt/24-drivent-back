@@ -3,7 +3,7 @@ import { cleanDb, generateValidToken } from '../helpers';
 import supertest from 'supertest';
 import httpStatus from 'http-status';
 import faker from '@faker-js/faker';
-import { createUser } from '../factories';
+import { createEnrollmentWithAddress, createUser } from '../factories';
 import { prisma } from '@/config';
 import jwt from 'jsonwebtoken';
 import { createReservation } from '../factories/reservations-facytory';
@@ -69,10 +69,34 @@ describe('POST /reservations', () => {
         accommodationPrice: 0,
       });
 
+      it('should respond with status 404 if userId given is not valid', async () => {
+        const userId = 999;
+        const body = generateValidBody(userId);
+        const token = await generateValidToken();
+
+        const response = await server.post('/reservations').set('Authorization', `Bearer ${token}`).send(body);
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+        const reservation = await prisma.reservation.findFirst({ where: { userId } });
+        expect(reservation).toBe(null);
+      });
+
+      it('should respond with status 404 if user have no enrollment created', async () => {
+        const user = await createUser();
+        const body = generateValidBody(user.id);
+        const token = await generateValidToken();
+
+        const response = await server.post('/reservations').set('Authorization', `Bearer ${token}`).send(body);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+        const reservation = await prisma.reservation.findFirst({ where: { userId: user.id } });
+        expect(reservation).toBe(null);
+      });
+
       it('should respond with status 201 and create new reservation', async () => {
         const user = await createUser();
         const body = generateValidBody(user.id);
         const token = await generateValidToken();
+        await createEnrollmentWithAddress(user);
 
         const response = await server.post('/reservations').set('Authorization', `Bearer ${token}`).send(body);
 
@@ -81,11 +105,12 @@ describe('POST /reservations', () => {
         expect(reservation).toBeDefined();
       });
 
-      it('should respond with status 200 and update reservation', async () => {
+      it('should respond with status 201 and update reservation', async () => {
         const user = await createUser();
-        const reservation = await createReservation(user);
         const body = generateValidBody(user.id);
         const token = await generateValidToken();
+        const reservation = await createReservation(user);
+        await createEnrollmentWithAddress(user);
 
         const response = await server.post('/reservations').set('Authorization', `Bearer ${token}`).send(body);
         expect(response.status).toBe(httpStatus.CREATED);
