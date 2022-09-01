@@ -19,6 +19,7 @@ model User {
   Session     Session[]
   Enrollment  Enrollment[]
   Reservation Reservation[]
+  Payment     Payment?
 }
 
 model Session {
@@ -76,10 +77,24 @@ model Reservation {
   modalityPrice      Int
   withAccommodation  Boolean
   accommodationPrice Int
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
   User               User           @relation(fields: [userId], references: [id])
 }
 
 enum TicketModality {
   online
   presential
+}
+
+model Payment {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  total          Int
+  cardNumber     String
+  cardExpiration String
+  cardHolderName String
+  User           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
