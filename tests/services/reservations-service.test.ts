@@ -3,7 +3,12 @@ import reservationRepository, { CreateReservationParams } from '@/repositories/r
 import userRepository from '@/repositories/user-repository';
 import { reservationsService } from '@/services';
 import { cleanDb } from '../helpers';
-import { ReservationNotFoundError, UserNotFoundError } from '@/services/reservations-service/errors';
+import {
+  EnrollmentNotFoundError,
+  ReservationNotFoundError,
+  UserNotFoundError,
+} from '@/services/reservations-service/errors';
+import enrollmentRepository from '@/repositories/enrollment-repository';
 
 beforeAll(async () => {
   await init();
@@ -15,13 +20,9 @@ beforeEach(() => {
 });
 
 describe('reserve ticket', () => {
-  const generateParams = () => ({
-    userId: 133,
-    modality: 'online',
-  });
-
   it('should create reservation', async () => {
     jest.spyOn(userRepository, 'findById').mockImplementationOnce((): any => true);
+    jest.spyOn(enrollmentRepository, 'findWithAddressByUserId').mockImplementationOnce((): any => true);
     jest.spyOn(reservationRepository, 'upsert').mockReturnValueOnce(null);
 
     const params: CreateReservationParams = {
@@ -50,6 +51,24 @@ describe('reserve ticket', () => {
 
     const promise = reservationsService.createOrUpdateReservation(params);
     expect(promise).rejects.toEqual(UserNotFoundError());
+    expect(reservationRepository.upsert).not.toBeCalled();
+  });
+
+  it('given user with no enrollment should throw not found error', async () => {
+    jest.spyOn(userRepository, 'findById').mockImplementationOnce((): any => true);
+    jest.spyOn(enrollmentRepository, 'findWithAddressByUserId').mockImplementationOnce((): any => false);
+    jest.spyOn(reservationRepository, 'upsert').mockReturnValueOnce(null);
+
+    const params: CreateReservationParams = {
+      userId: 100,
+      modality: 'online',
+      modalityPrice: 100,
+      withAccommodation: false,
+      accommodationPrice: 0,
+    };
+
+    const promise = reservationsService.createOrUpdateReservation(params);
+    expect(promise).rejects.toEqual(EnrollmentNotFoundError());
     expect(reservationRepository.upsert).not.toBeCalled();
   });
 });

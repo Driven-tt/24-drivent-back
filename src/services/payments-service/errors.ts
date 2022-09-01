@@ -7,16 +7,16 @@ export function UserNotFoundError(): ApplicationError {
   };
 }
 
-export function ReservationNotFoundError(): ApplicationError {
+export function PaymentNotFoundError(): ApplicationError {
   return {
     name: 'NotFoundError',
-    message: 'Reservation not found',
+    message: 'Payment not found',
   };
 }
 
-export function EnrollmentNotFoundError(): ApplicationError {
+export function ReservationNotFoundError(): ApplicationError {
   return {
     name: 'NotFoundError',
-    message: 'Cannot reserve ticket without subscription',
+    message: 'Cannot confirm payment without reservation',
   };
 }
