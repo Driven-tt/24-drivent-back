@@ -7,6 +7,9 @@ services:
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
   drivent-postgres-test:
     image: postgres:13-alpine
     environment:
