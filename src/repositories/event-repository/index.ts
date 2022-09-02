@@ -7,7 +7,9 @@ async function findFirst() {
 
   if (!event) {
     event = await prisma.event.findFirst();
-    await redis.set(cacheKey, JSON.stringify(event));
+    if (event !== null) {
+      await redis.set(cacheKey, JSON.stringify(event));
+    }
     return event;
   }
 
