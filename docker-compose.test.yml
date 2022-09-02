@@ -3,7 +3,7 @@ services:
   redis-test:
     image: redis
     restart: always
-    hostname: redis
+    hostname: redis-test
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
