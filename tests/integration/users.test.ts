@@ -1,5 +1,5 @@
 import app, { init } from '@/app';
-import { prisma } from '@/config';
+import { prisma, redis } from '@/config';
 import { duplicatedEmailError } from '@/services/users-service';
 import { faker } from '@faker-js/faker';
 import dayjs from 'dayjs';
@@ -55,6 +55,7 @@ describe('POST /users', () => {
 
     describe('when event started', () => {
       beforeAll(async () => {
+        await redis.flushAll();
         await prisma.event.deleteMany({});
         await createEvent();
       });
