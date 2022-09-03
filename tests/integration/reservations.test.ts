@@ -1,4 +1,4 @@
-import app, { init } from '@/app';
+import app, { close, init } from '@/app';
 import { cleanDb, generateValidToken } from '../helpers';
 import supertest from 'supertest';
 import httpStatus from 'http-status';
@@ -15,6 +15,10 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await cleanDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 const server = supertest(app);

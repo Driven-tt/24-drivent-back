@@ -1,4 +1,4 @@
-import { init } from '@/app';
+import { close, init } from '@/app';
 import reservationRepository, { CreateReservationParams } from '@/repositories/reservation-repository';
 import userRepository from '@/repositories/user-repository';
 import { reservationsService } from '@/services';
@@ -17,6 +17,10 @@ beforeAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 describe('reserve ticket', () => {

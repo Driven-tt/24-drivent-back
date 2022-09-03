@@ -1,4 +1,4 @@
-import { init } from '@/app';
+import { close, init } from '@/app';
 import paymentRepository, { CreatePaymentParams } from '@/repositories/payment-repository';
 import reservationRepository from '@/repositories/reservation-repository';
 import userRepository from '@/repositories/user-repository';
@@ -9,6 +9,10 @@ import { cleanDb } from '../helpers';
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 beforeEach(() => {
