@@ -12,6 +12,15 @@ services:
     volumes:
       - drivent-postgres-data:/var/lib/postgresql/data
     command: postgres -p ${POSTGRES_PORT}
+  drivent-redis-development:
+    image: redis
+    restart: always
+    hostname: redis
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - /home/duducp/Redis:/var/lib/postgresql/data
   drivent-development:
     build:
       context: .

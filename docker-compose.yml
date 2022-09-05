@@ -16,7 +16,17 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
       JWT_SECRET: ${JWT_SECRET}
+  redis:
+    image: redis
+    restart: always
+    hostname: redis
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - /home/duducp/Redis:/var/lib/postgresql/data
   drivent-postgres-production:
     image: postgres:13-alpine
     environment:

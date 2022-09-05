@@ -3,7 +3,7 @@ import 'express-async-errors';
 import express, { Express } from 'express';
 import cors from 'cors';
 
-import { loadEnv, connectDb, disconnectDB } from '@/config';
+import { loadEnv, connectDb, disconnectDB, connectRedis, disconnectRedis } from '@/config';
 
 loadEnv();
 
@@ -26,10 +26,12 @@ app
 
 export function init(): Promise<Express> {
   connectDb();
+  connectRedis();
   return Promise.resolve(app);
 }
 
 export async function close(): Promise<void> {
+  await disconnectRedis();
   await disconnectDB();
 }
 
