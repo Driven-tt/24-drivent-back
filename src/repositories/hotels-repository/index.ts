@@ -8,7 +8,7 @@ export async function getByHotelId(hotelId: number) {
   return prisma.hotels.findUnique({
     where: { id: +hotelId },
     include: {
-      Rooms: true,
+      Rooms: { orderBy: { id: 'asc' } },
     },
   });
 }

@@ -1,7 +1,8 @@
 import { bookingRoom, getAll, getByHotelId, getRoomById } from '@/repositories/hotels-repository';
 
 export async function getAllHotelsService() {
-  return await getAll();
+  let hotels = await getAll();
+
 }
 
 export async function getByHotelIdService(hotelId: number) {
